@@ -5,6 +5,7 @@ import kr.co.vcnc.swan.study.hibernate.practice.repository.EventRepository
 import org.hibernate.testing.transaction.TransactionUtil
 import org.hibernate.testing.transaction.TransactionUtil.doInJPA
 import org.junit.After
+import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,6 +39,27 @@ class ImmutableEntity {
                 message = "Hibernate User Guide rocks!"
             )
             em.persist(event)
+        })
+    }
+
+    @Test
+    fun example_260_the_immutable_entity_ignores_any_update() {
+        val supplier = Supplier { entityManagerFactory }
+        doInJPA(supplier, TransactionUtil.JPATransactionVoidFunction { em ->
+            val event = Event(
+                id = 1L,
+                createdAt = Instant.now(),
+                message = "Hibernate User Guide rocks!"
+            )
+            em.persist(event)
+        })
+        doInJPA(supplier, TransactionUtil.JPATransactionVoidFunction { em ->
+            val event = em.find(Event::class.java, 1L)
+            event.message = "Hibernate User Guide"
+        })
+        doInJPA(supplier, TransactionUtil.JPATransactionVoidFunction { em ->
+            val event = em.find(Event::class.java, 1L)
+            Assert.assertEquals("Hibernate User Guide rocks!", event.message)
         })
     }
 }
