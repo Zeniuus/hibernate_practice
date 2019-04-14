@@ -1,5 +1,6 @@
 package kr.co.vcnc.swan.study.hibernate.practice
 
+import kr.co.vcnc.swan.study.hibernate.practice.model.LazyEntity
 import kr.co.vcnc.swan.study.hibernate.practice.model.SimpleEntity
 import org.hibernate.CacheMode
 import org.hibernate.Session
@@ -19,7 +20,33 @@ class PersistenceContextSimple : AbstractHibernateTest() {
                 } catch (e: Exception) {
                 }
             }
+            try {
+                em.remove(em.find(LazyEntity::class.java, 1L))
+            } catch (e: Exception) {
+
+            }
             em.flush()
+        }
+    }
+
+    @Test
+    fun `test 5_2 - Lazy attribute loading`() {
+        doInJPA { em ->
+            val lazyEntity = LazyEntity(
+                id = 1L,
+                group1Field1 = "group 1 field 1",
+                group1Field2 = "group 1 field 2",
+                group2Field1 = "group 2 field 1",
+                group2Field2 = "group 2 field 2"
+            )
+            em.persist(lazyEntity)
+        }
+        doInJPA { em ->
+            val lazyEntity = em.find(LazyEntity::class.java, 1L)
+            println(lazyEntity.group1Field1)
+            println(lazyEntity.group1Field2)
+            println(lazyEntity.group2Field1)
+            println(lazyEntity.group2Field2)
         }
     }
 
