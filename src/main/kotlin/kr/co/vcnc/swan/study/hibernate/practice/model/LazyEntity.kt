@@ -18,10 +18,10 @@ data class LazyEntity(
     var group1Field2: String,
 
     @get:Basic(fetch = FetchType.LAZY)
-    @LazyGroup("other")
+    @get:LazyGroup("other")
     var group2Field1: String,
 
     @get:Basic(fetch = FetchType.LAZY)
-    @LazyGroup("other")
+    @get:LazyGroup("other")
     var group2Field2: String
 )
